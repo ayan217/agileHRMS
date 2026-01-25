@@ -14,12 +14,31 @@ class WorkTimer extends Component
 
     public function mount()
     {
-        $this->session = WorkSession::firstOrCreate([
-            'user_id'   => auth()->id(),
-            'work_date' => now()->toDateString()
-        ]);
+        // Auto-close any session running longer than 12 hours (failsafe)
+        WorkSession::where('user_id', auth()->id())
+            ->whereNull('clock_out')
+            ->where('clock_in', '<', now()->subHours(12))
+            ->update([
+                'clock_out' => now(),
+                'status'    => 'incomplete'
+            ]);
 
-        // If currently on break, restore active break start time
+        // Find currently open session (night-shift safe)
+        $this->session = WorkSession::where('user_id', auth()->id())
+            ->whereNull('clock_out')
+            ->latest('id')
+            ->first();
+
+        // If no open session exists, create fresh idle session
+        if (!$this->session) {
+            $this->session = WorkSession::create([
+                'user_id'   => auth()->id(),
+                'work_date' => now()->toDateString(),
+                'status'    => 'idle'
+            ]);
+        }
+
+        // Restore active break if session is currently on break
         if ($this->session->status === 'break') {
             $break = BreakLog::where('work_session_id', $this->session->id)
                 ->whereNull('break_end')
@@ -28,6 +47,7 @@ class WorkTimer extends Component
             $this->activeBreakStart = $break?->break_start;
         }
     }
+
 
     /* ---------------- CLOCK IN ---------------- */
 
