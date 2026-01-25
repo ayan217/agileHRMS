@@ -13,3 +13,9 @@ Route::view('profile', 'profile')
     ->name('profile');
 
 require __DIR__.'/auth.php';
+
+
+/* --- Admin Routes --- */
+Route::middleware(['auth','admin'])->prefix('admin')->group(function () {
+    Route::view('dashboard', 'admin.dashboard')->name('admin.dashboard');
+});
