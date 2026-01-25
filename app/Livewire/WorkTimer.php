@@ -9,36 +9,39 @@ use Carbon\Carbon;
 
 class WorkTimer extends Component
 {
+    private const clockoutFailsafeHours = 12;
+    private const lateHourStart = '16:00';
     public WorkSession $session;
     public ?string $activeBreakStart = null;
 
     public function mount()
     {
-        // Auto-close any session running longer than 12 hours (failsafe)
+        // Auto-close forgotten open session (failsafe)
         WorkSession::where('user_id', auth()->id())
             ->whereNull('clock_out')
-            ->where('clock_in', '<', now()->subHours(12))
+            ->where('clock_in', '<', now()->subHours(self::clockoutFailsafeHours))
             ->update([
                 'clock_out' => now(),
                 'status'    => 'incomplete'
             ]);
 
-        // Find currently open session (night-shift safe)
-        $this->session = WorkSession::where('user_id', auth()->id())
-            ->whereNull('clock_out')
-            ->latest('id')
+        // Always load today's session if exists
+        $session = WorkSession::where('user_id', auth()->id())
+            ->where('work_date', now()->toDateString())
             ->first();
 
-        // If no open session exists, create fresh idle session
-        if (!$this->session) {
-            $this->session = WorkSession::create([
+        // If no row exists for today, create idle row
+        if (!$session) {
+            $session = WorkSession::create([
                 'user_id'   => auth()->id(),
                 'work_date' => now()->toDateString(),
                 'status'    => 'idle'
             ]);
         }
 
-        // Restore active break if session is currently on break
+        $this->session = $session;
+
+        // Restore break if session is in break state
         if ($this->session->status === 'break') {
             $break = BreakLog::where('work_session_id', $this->session->id)
                 ->whereNull('break_end')
@@ -47,6 +50,7 @@ class WorkTimer extends Component
             $this->activeBreakStart = $break?->break_start;
         }
     }
+
 
 
     /* ---------------- CLOCK IN ---------------- */
@@ -58,7 +62,7 @@ class WorkTimer extends Component
         $this->session->update([
             'clock_in' => now(),
             'status'   => 'working',
-            'is_late'  => now()->format('H:i') > '16:00'
+            'is_late'  => now()->format('H:i') > self::lateHourStart
         ]);
         $this->dispatch('hardReload');
     }

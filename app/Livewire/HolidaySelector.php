@@ -8,7 +8,7 @@ use Carbon\Carbon;
 
 class HolidaySelector extends Component
 {
-    private $totalHolidays = 12;
+    private const totalHolidays = 12;
     public $month;
     public $year;
 
@@ -32,7 +32,7 @@ class HolidaySelector extends Component
             ->whereYear('holiday_date', $this->year)
             ->count();
 
-        if ($count >= $this->totalHolidays) return;
+        if ($count >= self::totalHolidays) return;
 
         Holiday::firstOrCreate([
             'user_id' => $user->id,
@@ -66,7 +66,7 @@ class HolidaySelector extends Component
             ->pluck('holiday_date')
             ->toArray();
 
-        $remaining = $this->totalHolidays - count($holidays);
+        $remaining = self::totalHolidays - count($holidays);
 
         return view('livewire.holiday-selector', [
             'start' => $start,
