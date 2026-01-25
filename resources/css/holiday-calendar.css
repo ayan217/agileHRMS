@@ -1,0 +1,80 @@
+.holiday-card {
+    margin-top: 20px;
+    font-family: system-ui, sans-serif;
+    color: #ffffff;
+}
+
+.holiday-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.calendar-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.calendar-nav button {
+    background: rgba(255,255,255,0.08);
+    border: none;
+    color: white;
+    font-size: 18px;
+    padding: 4px 10px;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+}
+
+.calendar-day-head {
+    text-align: center;
+    font-size: 12px;
+    opacity: 0.6;
+    padding-bottom: 4px;
+}
+
+.calendar-cell {
+    text-align: center;
+    padding: 10px 0;
+    border-radius: 6px;
+    cursor: pointer;
+    background: rgba(255,255,255,0.06);
+    transition: background 0.15s ease;
+}
+
+.calendar-cell:hover {
+    background: rgba(255,255,255,0.15);
+}
+
+.calendar-cell.holiday {
+    background: #2563eb;
+}
+
+.calendar-cell.sunday {
+    opacity: 0.2;
+    cursor: not-allowed;
+}
+
+.calendar-cell.past {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.calendar-cell.empty {
+    background: transparent;
+    cursor: default;
+}
+
+.calendar-note {
+    margin-top: 10px;
+    font-size: 12px;
+    opacity: 0.6;
+}

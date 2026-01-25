@@ -14,7 +14,7 @@
 
 
     <!-- Scripts -->
-    @vite(['resources/css/app.css', 'resources/css/work-timer.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/css/work-timer.css', 'resources/css/holiday-calendar.css', 'resources/js/app.js'])
 </head>
 
 <body class="font-sans antialiased">
