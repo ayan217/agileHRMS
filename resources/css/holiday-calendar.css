@@ -1,80 +1,224 @@
-.holiday-card {
-    margin-top: 20px;
-    font-family: system-ui, sans-serif;
+/* Wrapper */
+.holiday-plan-wrapper {
     color: #ffffff;
+    font-family: system-ui, sans-serif;
 }
 
-.holiday-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
+/* Heading */
+.holiday-plan-wrapper h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 6px;
 }
 
-.calendar-nav {
+/* Select */
+.holiday-plan-wrapper select {
+    background: rgba(255, 255, 255, 0.06);
+    color: #fff;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+/* Info text */
+.holiday-plan-wrapper p {
+    font-size: 12px;
+    opacity: 0.6;
+    margin-bottom: 12px;
+}
+
+/* Year grid: 3 months per row */
+.year-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+/* Month box */
+.month-box {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.month-title {
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+/* Month grid */
+.month-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+}
+
+.day-head {
+    text-align: center;
+    font-size: 10px;
+    opacity: 0.4;
+    padding-bottom: 3px;
+}
+
+/* Day cell */
+.day-cell {
+    text-align: center;
+    padding: 6px 0;
+    font-size: 12px;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.04);
+    transition: background 0.15s ease, transform 0.05s ease;
+}
+
+.day-cell:not(.disabled):hover {
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateY(-1px);
+}
+
+/* Preset holidays (Red) */
+.day-cell.preset-selected {
+    background: #dc2626;
+    font-weight: 600;
+}
+
+/* Custom holidays (Blue) */
+.day-cell.custom-selected {
+    background: #2563eb;
+    font-weight: 600;
+}
+
+/* Sundays */
+.day-cell.disabled {
+    opacity: 0.25;
+    cursor: not-allowed;
+}
+
+/* Empty offset */
+.day-cell.empty {
+    background: transparent;
+}
+
+/* Submit button */
+.holiday-plan-wrapper button {
+    margin-top: 15px;
+    background: #16a34a;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    font-size: 13px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.holiday-plan-wrapper button:hover {
+    background: #22c55e;
+}
+
+.tab-row {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 15px;
+    gap: 10px;
     margin-bottom: 15px;
 }
 
-.calendar-nav button {
-    background: rgba(255,255,255,0.08);
-    border: none;
+.tab-row button {
+    background: rgba(255, 255, 255, 0.06);
     color: white;
-    font-size: 18px;
-    padding: 4px 10px;
-    cursor: pointer;
-    border-radius: 6px;
-}
-
-.calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 6px;
-}
-
-.calendar-day-head {
-    text-align: center;
-    font-size: 12px;
-    opacity: 0.6;
-    padding-bottom: 4px;
-}
-
-.calendar-cell {
-    text-align: center;
-    padding: 10px 0;
+    border: none;
+    padding: 6px 14px;
     border-radius: 6px;
     cursor: pointer;
-    background: rgba(255,255,255,0.06);
-    transition: background 0.15s ease;
+    font-size: 13px;
 }
 
-.calendar-cell:hover {
-    background: rgba(255,255,255,0.15);
-}
-
-.calendar-cell.holiday {
+.tab-active {
     background: #2563eb;
 }
 
-.calendar-cell.sunday {
-    opacity: 0.2;
+.info-text {
+    font-size: 12px;
+    opacity: 0.6;
+    margin-bottom: 10px;
+}
+
+/* Default day cells (when clickable) */
+.day-cell {
+    cursor: pointer;
+}
+
+/* Disabled days (Sundays / locked / read-only) */
+.day-cell.disabled {
     cursor: not-allowed;
 }
 
-.calendar-cell.past {
-    opacity: 0.3;
-    cursor: not-allowed;
-}
-
-.calendar-cell.empty {
-    background: transparent;
+/* Empty offset cells */
+.day-cell.empty {
     cursor: default;
 }
 
-.calendar-note {
-    margin-top: 10px;
-    font-size: 12px;
-    opacity: 0.6;
+/* ===== Clean Professional Select ===== */
+
+.holiday-plan-wrapper select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    background-color: rgba(255, 255, 255, 0.06);
+    color: #ffffff;
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 8px 36px 8px 12px;
+    border-radius: 8px;
+
+    font-size: 13px;
+    font-weight: 500;
+
+    outline: none;
+    cursor: pointer;
+    min-width: 240px;
+
+    transition: background 0.15s ease, border 0.15s ease;
+}
+
+/* Hover */
+.holiday-plan-wrapper select:hover {
+    background-color: rgba(255, 255, 255, 0.10);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Focus */
+.holiday-plan-wrapper select:focus {
+    background-color: rgba(255, 255, 255, 0.12);
+    border-color: #2563eb;
+}
+
+/* Dropdown arrow */
+.holiday-plan-wrapper select {
+    background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px;
+}
+
+/* Dropdown list (opened options) */
+.holiday-plan-wrapper select option {
+    background-color: #0f172a;
+    color: #ffffff;
+}
+
+
+/* Responsive */
+@media (max-width: 1100px) {
+    .year-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 700px) {
+    .year-grid {
+        grid-template-columns: 1fr;
+    }
 }

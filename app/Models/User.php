@@ -45,8 +45,8 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-    public function holidays()
+    public function holidayPlans()
     {
-        return $this->hasMany(Holiday::class);
+        return $this->hasMany(UserHolidayPlan::class);
     }
 }

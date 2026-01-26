@@ -11,13 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('holidays', function (Blueprint $table) {
+        Schema::create('holiday_presets', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->date('holiday_date');
+            $table->string('name');                 // "US Holidays", "Indian Holidays", "My Custom Set"
+            $table->foreignId('user_id')->nullable(); // null = system preset, else owned by user
             $table->timestamps();
-
-            $table->unique(['user_id', 'holiday_date']);
         });
     }
 
@@ -26,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('holidays');
+        Schema::dropIfExists('holiday_presets');
     }
 };

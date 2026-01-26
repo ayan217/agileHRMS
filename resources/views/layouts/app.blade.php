@@ -35,6 +35,14 @@
             {{ $slot }}
         </main>
     </div>
+    <script>
+        document.addEventListener('livewire:init', () => {
+            Livewire.on('alert', (data) => {
+                showAlert(data.message, data.type ?? 'success');
+            });
+        });
+    </script>
+
 </body>
 
 </html>
