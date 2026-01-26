@@ -15,7 +15,7 @@ cmds = [
     "php artisan config:cache",
     "php artisan route:cache",
     "php artisan view:cache"
-    "php artisan optimize --except=views",
+    "php artisan optimize --except=views"
 ]
 
 [start]
