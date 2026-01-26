@@ -1,8 +1,10 @@
 <div class="admin-attendance-card">
 
     <div class="admin-attendance-title">
-        Today's Live Attendance
+        Live Attendance — {{ \Carbon\Carbon::parse($selectedDate)->format('d M Y') }}
     </div>
+
+    <!-- Filters -->
     <div class="admin-filter-bar">
 
         <div class="filter-left">
@@ -16,6 +18,7 @@
 
     </div>
 
+    <!-- Attendance Table -->
     <table class="admin-attendance-table" wire:poll.10s>
         <thead>
             <tr>
@@ -26,6 +29,8 @@
                 <th>Worked</th>
                 <th>Break</th>
                 <th>Late</th>
+                <th>Next Holiday</th>
+                <th>Holiday List</th>
             </tr>
         </thead>
 
@@ -66,9 +71,51 @@
                             <span class="late-badge">Late</span>
                         @endif
                     </td>
+
+                    <!-- Next Holiday -->
+                    <td>
+                        @if ($row['next_holiday'] !== null)
+                            {{ $row['next_holiday'] }} {{ $row['next_holiday'] == 1 ? 'day' : 'days' }}
+                        @else
+                            --
+                        @endif
+
+                    </td>
+
+                    <!-- Holiday List Button -->
+                    <td>
+                        <button class="filter-btn" wire:click="openHolidayList({{ $row['id'] }})">
+                            Check
+                        </button>
+                    </td>
                 </tr>
             @endforeach
         </tbody>
     </table>
+
+
+    <!-- Holiday List Modal -->
+    @if ($showHolidayModal)
+        <div class="admin-modal-backdrop">
+
+            <div class="admin-modal">
+
+                <div class="admin-modal-header">
+                    <span>Employee Holiday List — {{ now()->year }}</span>
+                    <button wire:click="closeHolidayList">✕</button>
+                </div>
+
+                <div class="year-grid">
+                    @include('livewire.partials.year-calendar', [
+                        'year' => now()->year,
+                        'presetDates' => $holidayDates,
+                        'customDates' => [],
+                        'clickable' => false,
+                    ])
+                </div>
+
+            </div>
+        </div>
+    @endif
 
 </div>
