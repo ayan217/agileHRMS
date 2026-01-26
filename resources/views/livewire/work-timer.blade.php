@@ -71,7 +71,10 @@
 
         @if ($session->status === 'working')
             <button type="button" wire:click="startBreak" class="btn btn-yellow">Start Break</button>
-            <button type="button" wire:click="clockOut" class="btn btn-red">Clock Out</button>
+            <button type="button" onclick="confirmAction('Do you want to clock out now?', 'confirmClockOut')"
+                class="btn btn-red">
+                Clock Out
+            </button>
         @endif
 
         @if ($session->status === 'break')

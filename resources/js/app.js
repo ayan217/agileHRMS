@@ -18,6 +18,26 @@ window.showAlert = function (message, type = 'success') {
 	});
 };
 
+window.confirmAction = function (message, callbackEvent) {
+	Swal.fire({
+		title: 'Are you sure?',
+		text: message,
+		icon: 'warning',
+		width: 480,
+		padding: '2em',
+		color: '#ffffff',
+		background: '#0f172a',
+		showCancelButton: true,
+		confirmButtonColor: '#dc2626',
+		cancelButtonColor: '#334155',
+		confirmButtonText: 'Yes',
+		cancelButtonText: 'Cancel'
+	}).then((result) => {
+		if (result.isConfirmed) {
+			Livewire.dispatch(callbackEvent);
+		}
+	});
+};
 
 
 

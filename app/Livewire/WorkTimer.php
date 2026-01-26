@@ -2,10 +2,12 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
-use App\Models\WorkSession;
-use App\Models\BreakLog;
 use Carbon\Carbon;
+use Livewire\Component;
+use App\Models\BreakLog;
+use function Livewire\on;
+use App\Models\WorkSession;
+use Livewire\Attributes\On;
 
 class WorkTimer extends Component
 {
@@ -113,7 +115,7 @@ class WorkTimer extends Component
     }
 
     /* ---------------- CLOCK OUT ---------------- */
-
+    #[On('confirmClockOut')]
     public function clockOut()
     {
         if (!$this->session->clock_in || $this->session->clock_out) return;
@@ -130,6 +132,7 @@ class WorkTimer extends Component
             'total_work_seconds' => $workedSeconds,
             'status'             => $status
         ]);
+        $this->dispatch('alert', message: 'Clocked out successfully');
         $this->dispatch('hardReload');
     }
 
