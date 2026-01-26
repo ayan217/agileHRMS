@@ -3,8 +3,20 @@
     <div class="admin-attendance-title">
         Today's Live Attendance
     </div>
+    <div class="admin-filter-bar">
 
-    <table class="admin-attendance-table">
+        <div class="filter-left">
+            <button wire:click="setToday" class="filter-btn">Today</button>
+            <button wire:click="setPreviousDay" class="filter-btn">Previous Day</button>
+        </div>
+
+        <div class="filter-right">
+            <input type="date" wire:model.live="selectedDate" class="filter-date">
+        </div>
+
+    </div>
+
+    <table class="admin-attendance-table" wire:poll.10s>
         <thead>
             <tr>
                 <th>Name</th>

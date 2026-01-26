@@ -9,11 +9,26 @@ use Carbon\Carbon;
 
 class AdminLiveAttendance extends Component
 {
-    protected $listeners = ['refreshAdmin' => '$refresh'];
+    public $selectedDate;
+
+    public function mount()
+    {
+        $this->selectedDate = now()->toDateString();
+    }
+    public function setToday()
+    {
+        $this->selectedDate = now()->toDateString();
+    }
+
+    public function setPreviousDay()
+    {
+        $this->selectedDate = now()->subDay()->toDateString();
+    }
+
 
     public function getTodaySessionsProperty()
     {
-        $today = now()->toDateString();
+        $today = $this->selectedDate;
 
         return User::where('role', 'user')
             ->with(['workSessions' => function ($q) use ($today) {
