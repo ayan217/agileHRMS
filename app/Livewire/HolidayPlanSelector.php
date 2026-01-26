@@ -110,7 +110,7 @@ class HolidayPlanSelector extends Component
             if (count($this->customSelectedDates) === 0) return;
 
             $preset = HolidayPreset::create([
-                'name' => 'My Custom Holidays',
+                'name' => 'My Custom Holidays - ' . $targetYear,
                 'user_id' => auth()->id()
             ]);
 
