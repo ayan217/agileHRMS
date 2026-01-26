@@ -9,7 +9,7 @@ cmds = [
     "chmod +x /assets/start.sh",
     "composer install",
     "npm install",
-    "npm run dev"
+    "npm run build"
 ]
 
 [start]
