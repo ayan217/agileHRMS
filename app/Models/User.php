@@ -49,4 +49,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(UserHolidayPlan::class);
     }
+    public function workSessions()
+    {
+        return $this->hasMany(WorkSession::class);
+    }
 }

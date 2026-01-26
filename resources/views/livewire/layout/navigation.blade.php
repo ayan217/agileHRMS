@@ -23,9 +23,8 @@ new class extends Component {
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}" wire:navigate>
-                    <img src="{{ asset('assets/images/logo_hrms_transparent.png') }}"
-     alt="HRMS Logo"
-     style="height:60px; width:auto; display:block; object-fit:contain;">
+                        <img src="{{ asset('assets/images/logo_hrms_transparent.png') }}" alt="HRMS Logo"
+                            style="height:60px; width:auto; display:block; object-fit:contain;">
 
                     </a>
                 </div>
