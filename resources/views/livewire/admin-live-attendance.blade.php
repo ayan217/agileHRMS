@@ -75,7 +75,7 @@
                     <!-- Next Holiday -->
                     <td>
                         @if ($row['next_holiday'] !== null)
-                            {{ $row['next_holiday'] }} {{ $row['next_holiday'] == 1 ? 'day' : 'days' }}
+                            In {{ $row['next_holiday'] }} {{ $row['next_holiday'] == 1 ? 'day' : 'days' }}
                         @else
                             --
                         @endif
