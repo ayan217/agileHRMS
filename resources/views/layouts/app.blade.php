@@ -6,6 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="96x96" href="{{ asset('assets/favicons/favicon-96x96.png') }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('assets/favicons/favicon-192x192.png') }}">
+
+    <!-- Apple Touch Icon (iOS Home Screen) -->
+    <link rel="apple-touch-icon" sizes="192x192" href="{{ asset('assets/favicons/apple-touch-icon.png') }}">
+
+    <!-- Android / Chrome -->
+    <link rel="manifest" href="{{ asset('assets/favicons/site.webmanifest') }}">
+
+    <!-- Fallback -->
+    <link rel="shortcut icon" href="{{ asset('assets/favicons/favicon.ico') }}">
+
+
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Fonts -->
