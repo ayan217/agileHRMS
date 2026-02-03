@@ -6,24 +6,37 @@ use Carbon\Carbon;
 use Livewire\Component;
 use App\Models\BreakLog;
 use App\Models\WorkSession;
-use Livewire\Attributes\On;
 
 class WorkTimer extends Component
 {
     public WorkSession $session;
 
+    private function resolveWorkDate()
+    {
+        $now = now();
+
+        // If before 5 AM → count as previous day
+        if ($now->hour < 5) {
+            return $now->subDay()->toDateString();
+        }
+
+        return $now->toDateString();
+    }
+
+
     public function mount()
     {
-        // Always load today's session
+        $workDate = $this->resolveWorkDate();
+
         $session = WorkSession::where('user_id', auth()->id())
-            ->where('work_date', now()->toDateString())
+            ->where('work_date', $workDate)
             ->first();
 
         // Create new session if none exists
         if (!$session) {
             $session = WorkSession::create([
                 'user_id'   => auth()->id(),
-                'work_date' => now()->toDateString(),
+                'work_date' => $workDate,
                 'status'    => 'idle',
                 'total_work_seconds' => 0,
                 'total_break_seconds' => 0,
@@ -37,6 +50,8 @@ class WorkTimer extends Component
 
     public function clockIn()
     {
+        $this->dispatch('hardReload');
+        
         if ($this->session->status === 'working') {
             return;
         }
@@ -55,7 +70,7 @@ class WorkTimer extends Component
                     'work_session_id' => $this->session->id,
                     'break_start'     => $this->session->clock_out,
                     'break_end'       => $now,
-                    'duration_seconds'=> $gapSeconds
+                    'duration_seconds' => $gapSeconds
                 ]);
 
                 $this->session->increment('total_break_seconds', $gapSeconds);
@@ -67,8 +82,6 @@ class WorkTimer extends Component
             'clock_out' => null,
             'status'    => 'working',
         ]);
-
-        $this->dispatch('hardReload');
     }
 
     /* ---------------- CLOCK OUT ---------------- */
