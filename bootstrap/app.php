@@ -13,6 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminOnly::class,
+            'access' => \App\Http\Middleware\CheckAccess::class,
         ]);
           $middleware->trustProxies(at: '*');
     })

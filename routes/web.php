@@ -19,3 +19,9 @@ require __DIR__.'/auth.php';
 Route::middleware(['auth','admin'])->prefix('admin')->group(function () {
     Route::view('dashboard', 'admin.dashboard')->name('admin.dashboard');
 });
+
+
+Route::middleware(['auth', 'access:vault'])
+    ->get('/vault', function () {
+        // return view('vault.index');
+    });

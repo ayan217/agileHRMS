@@ -79,6 +79,10 @@
                             wire:key="reset-btn-{{ $row['id'] }}">
                             Reset to Standard Shift
                         </button>
+                        <button class="filter-btn" wire:click="openAccessManager({{ $row['id'] }})"
+                            wire:key="access-btn-{{ $row['id'] }}">
+                            Access Manager
+                        </button>
                     </td>
                 </tr>
             @endforeach
@@ -109,5 +113,32 @@
             </div>
         </div>
     @endif
+
+    <!-- Access Modal -->
+    @if ($showAccessModal)
+        <div class="admin-modal-backdrop">
+            <div class="admin-modal">
+
+                <div class="admin-modal-header">
+                    <span>Access Manager</span>
+                    <button wire:click="$set('showAccessModal', false)">✕</button>
+                </div>
+
+                <div style="padding:20px;">
+                    @foreach ($allAccesses as $access)
+                        <div style="margin-bottom:10px;">
+                            <label>
+                                <input type="checkbox" wire:click="toggleAccess({{ $access->id }})"
+                                    {{ in_array($access->id, $userAccesses) ? 'checked' : '' }}>
+                                {{ ucfirst($access->name) }}
+                            </label>
+                        </div>
+                    @endforeach
+                </div>
+
+            </div>
+        </div>
+    @endif
+
 
 </div>

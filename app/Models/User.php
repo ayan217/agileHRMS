@@ -54,4 +54,13 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(WorkSession::class);
     }
+    public function accesses()
+    {
+        return $this->belongsToMany(Access::class);
+    }
+
+    public function hasAccess($accessName)
+    {
+        return $this->accesses()->where('name', $accessName)->exists();
+    }
 }

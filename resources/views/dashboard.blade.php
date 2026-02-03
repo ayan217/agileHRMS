@@ -6,15 +6,29 @@
                 {{ __('Dashboard') }}
             </h2>
 
-            @if (auth()->user()->role === 'admin')
-                <a href="{{ route('admin.dashboard') }}"
-                    class="px-4 py-1 text-sm rounded bg-blue-600 text-white hover:bg-blue-700 transition" wire:navigate>
-                    Admin Dashboard
-                </a>
-            @endif
+            <div class="flex gap-2">
+
+                @if (auth()->user()->role === 'admin')
+                    <a href="{{ route('admin.dashboard') }}"
+                        class="px-4 py-1 text-sm rounded bg-blue-600 text-white hover:bg-blue-700 transition"
+                        wire:navigate>
+                        Admin Dashboard
+                    </a>
+                @endif
+
+                @if (auth()->user()->role === 'admin' || auth()->user()->hasAccess('vault'))
+                    <a href="#"
+                        class="px-4 py-1 text-sm rounded bg-green-600 text-white hover:bg-green-700 transition"
+                        wire:navigate>
+                        Password Manager
+                    </a>
+                @endif
+
+            </div>
 
         </div>
     </x-slot>
+
 
 
     <div class="py-12">

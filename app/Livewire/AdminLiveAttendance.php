@@ -2,12 +2,13 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
+use Carbon\Carbon;
 use App\Models\User;
+use App\Models\Access;
+use Livewire\Component;
 use App\Models\WorkSession;
 use App\Models\UserHolidayPlan;
 use App\Models\HolidayPresetDate;
-use Carbon\Carbon;
 
 class AdminLiveAttendance extends Component
 {
@@ -17,6 +18,11 @@ class AdminLiveAttendance extends Component
     public $showHolidayModal = false;
     public $holidayUserId = null;
     public $holidayDates = [];
+    public $showAccessModal = false;
+    public $selectedUserId;
+    public $allAccesses = [];
+    public $userAccesses = [];
+
 
     private function resolveBusinessDate($date = null)
     {
@@ -200,6 +206,33 @@ class AdminLiveAttendance extends Component
 
         // Refresh UI
         $this->dispatch('$refresh');
+    }
+
+    public function openAccessManager($userId)
+    {
+        $this->selectedUserId = $userId;
+
+        $this->allAccesses = Access::all();
+
+        $this->userAccesses = User::find($userId)
+            ->accesses()
+            ->pluck('access_id')
+            ->toArray();
+
+        $this->showAccessModal = true;
+    }
+
+    public function toggleAccess($accessId)
+    {
+        $user = User::find($this->selectedUserId);
+
+        if (in_array($accessId, $this->userAccesses)) {
+            $user->accesses()->detach($accessId);
+        } else {
+            $user->accesses()->attach($accessId);
+        }
+
+        $this->userAccesses = $user->accesses()->pluck('access_id')->toArray();
     }
 
 
