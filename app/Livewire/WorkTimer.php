@@ -23,21 +23,75 @@ class WorkTimer extends Component
         return $now->toDateString();
     }
 
-
     public function mount()
     {
-        $workDate = $this->resolveWorkDate();
+        $userId = auth()->id();
+        $now = now();
 
-        $session = WorkSession::where('user_id', auth()->id())
+        /*
+    |--------------------------------------------------------------------------
+    | 1️⃣ Define 5 AM Business Day Cutoff
+    |--------------------------------------------------------------------------
+    */
+
+        $cutoffToday = $now->copy()->setTime(5, 0);
+
+        // If current time is before 5 AM,
+        // the cutoff belongs to yesterday
+        if ($now->lt($cutoffToday)) {
+            $cutoffToday->subDay();
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | 2️⃣ Auto-close any open session that crossed 5 AM
+    |--------------------------------------------------------------------------
+    */
+
+        $openSession = WorkSession::where('user_id', $userId)
+            ->whereNull('clock_out')
+            ->first();
+
+        if (
+            $openSession && Carbon::parse($openSession->clock_in)->lt($cutoffToday)
+        ) {
+
+            $workedSeconds = $openSession->clock_in
+                ->diffInSeconds($cutoffToday);
+
+            $openSession->increment('total_work_seconds', $workedSeconds);
+
+            $openSession->update([
+                'clock_out' => $cutoffToday,
+                'status'    => 'idle',
+            ]);
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | 3️⃣ Resolve Correct Work Date (Business Day)
+    |--------------------------------------------------------------------------
+    */
+
+        $workDate = $now->hour < 5
+            ? $now->copy()->subDay()->toDateString()
+            : $now->toDateString();
+
+        /*
+    |--------------------------------------------------------------------------
+    | 4️⃣ Load or Create Today's Session
+    |--------------------------------------------------------------------------
+    */
+
+        $session = WorkSession::where('user_id', $userId)
             ->where('work_date', $workDate)
             ->first();
 
-        // Create new session if none exists
         if (!$session) {
             $session = WorkSession::create([
-                'user_id'   => auth()->id(),
+                'user_id' => $userId,
                 'work_date' => $workDate,
-                'status'    => 'idle',
+                'status' => 'idle',
                 'total_work_seconds' => 0,
                 'total_break_seconds' => 0,
             ]);
@@ -51,7 +105,7 @@ class WorkTimer extends Component
     public function clockIn()
     {
         $this->dispatch('hardReload');
-        
+
         if ($this->session->status === 'working') {
             return;
         }
