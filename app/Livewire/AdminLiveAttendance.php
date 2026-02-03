@@ -18,21 +18,36 @@ class AdminLiveAttendance extends Component
     public $holidayUserId = null;
     public $holidayDates = [];
 
+    private function resolveBusinessDate($date = null)
+    {
+        $now = $date ? Carbon::parse($date) : now();
+
+        if ($now->hour < 5) {
+            return $now->subDay()->toDateString();
+        }
+
+        return $now->toDateString();
+    }
+
+
     public function mount()
     {
-        $this->selectedDate = now()->toDateString();
+        $this->selectedDate = $this->resolveBusinessDate();
     }
 
     /* Quick filters */
     public function setToday()
     {
-        $this->selectedDate = now()->toDateString();
+        $this->selectedDate = $this->resolveBusinessDate();
     }
 
     public function setPreviousDay()
     {
-        $this->selectedDate = now()->subDay()->toDateString();
+        $this->selectedDate = Carbon::parse($this->resolveBusinessDate())
+            ->subDay()
+            ->toDateString();
     }
+
 
     /* Open employee holiday list modal */
     public function openHolidayList($userId)
@@ -63,19 +78,23 @@ class AdminLiveAttendance extends Component
     {
         $today = $this->selectedDate;
 
+        // Resolve current business day (5 AM boundary)
+        $currentBusinessDate = now()->hour < 5
+            ? now()->subDay()->toDateString()
+            : now()->toDateString();
+
         return User::where('role', 'user')
             ->with(['workSessions' => function ($q) use ($today) {
                 $q->where('work_date', $today)->latest('id');
             }])
             ->get()
-            ->map(function ($user) use ($today) {
+            ->map(function ($user) use ($today, $currentBusinessDate) {
 
                 $session = $user->workSessions->first();
 
                 /* ===== If no session → Absent ===== */
                 if (!$session) {
 
-                    // Next holiday calc
                     $nextHolidayInDays = $this->getNextHolidayDays($user->id);
 
                     return [
@@ -91,15 +110,19 @@ class AdminLiveAttendance extends Component
                     ];
                 }
 
-                /* ===== Worked seconds ===== */
-                if (!$session->clock_out && $session->clock_in && $today === now()->toDateString()) {
-                    $worked = Carbon::parse($session->clock_in)
-                        ->diffInSeconds(now()) - $session->total_break_seconds;
-                } else {
-                    $worked = $session->total_work_seconds;
+                /* ===== Worked seconds (NEW CORRECT LOGIC) ===== */
+
+                $worked = $session->total_work_seconds ?? 0;
+
+                // If currently working AND admin is viewing active business day
+                if (
+                    $session->status === 'working' &&
+                    !$session->clock_out &&
+                    $today === $currentBusinessDate
+                ) {
+                    $worked += Carbon::parse($session->clock_in)->diffInSeconds(now());
                 }
 
-                /* ===== Next holiday ===== */
                 $nextHolidayInDays = $this->getNextHolidayDays($user->id);
 
                 return [
@@ -109,12 +132,13 @@ class AdminLiveAttendance extends Component
                     'clock_in' => $session->clock_in,
                     'clock_out' => $session->clock_out,
                     'worked' => max(0, $worked),
-                    'break' => $session->total_break_seconds,
-                    'late' => $session->is_late,
+                    'break' => $session->total_break_seconds ?? 0,
+                    'late' => $session->is_late ?? false,
                     'next_holiday' => $nextHolidayInDays
                 ];
             });
     }
+
 
     /* ===== Helper: Get next holiday in days ===== */
     private function getNextHolidayDays($userId)
@@ -136,6 +160,48 @@ class AdminLiveAttendance extends Component
 
         return now()->startOfDay()->diffInDays(Carbon::parse($nextDate)->startOfDay());
     }
+
+    public function resetSessionToStandardShift($userId)
+    {
+        $date = Carbon::parse($this->selectedDate);
+
+        // Define fixed shift
+        $clockIn  = $date->copy()->setTime(15, 0);   // 3:00 PM
+        $clockOut = $date->copy()->addDay()->setTime(0, 0); // 12:00 AM next day
+
+        // Calculate worked seconds
+        $workedSeconds = $clockIn->diffInSeconds($clockOut);
+
+        // Find or create session
+        $session = WorkSession::firstOrCreate(
+            [
+                'user_id'   => $userId,
+                'work_date' => $this->selectedDate,
+            ],
+            [
+                'total_work_seconds'  => 0,
+                'total_break_seconds' => 0,
+                'status'              => 'idle',
+            ]
+        );
+
+        // Reset break logs (optional but recommended)
+        $session->breaks()->delete();
+
+        // Update session
+        $session->update([
+            'clock_in'             => $clockIn,
+            'clock_out'            => $clockOut,
+            'total_work_seconds'   => $workedSeconds,
+            'total_break_seconds'  => 0,
+            'status'               => 'completed',
+            'is_late'              => false,
+        ]);
+
+        // Refresh UI
+        $this->dispatch('$refresh');
+    }
+
 
     public function render()
     {

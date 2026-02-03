@@ -27,9 +27,9 @@
                 <th>Clock In</th>
                 <th>Clock Out</th>
                 <th>Worked</th>
-              
                 <th>Next Holiday</th>
-               
+                <th>Actions</th>
+
             </tr>
         </thead>
 
@@ -62,18 +62,24 @@
 
                     <td>{{ gmdate('H:i:s', $row['worked']) }}</td>
 
-                
+
                     <td>
-                        <button class="filter-btn" wire:click="openHolidayList({{ $row['id'] }})">
+                        <button class="filter-btn" wire:click="openHolidayList({{ $row['id'] }})"
+                            wire:key="holiday-btn-{{ $row['id'] }}">
                             @if ($row['next_holiday'] !== null)
-                            In {{ $row['next_holiday'] }} {{ $row['next_holiday'] == 1 ? 'day' : 'days' }}
-                        @else
-                            Check
-                        @endif
+                                In {{ $row['next_holiday'] }} {{ $row['next_holiday'] == 1 ? 'day' : 'days' }}
+                            @else
+                                Check
+                            @endif
                         </button>
                     </td>
 
-                 
+                    <td>
+                        <button class="filter-btn" wire:click="resetSessionToStandardShift({{ $row['id'] }})"
+                            wire:key="reset-btn-{{ $row['id'] }}">
+                            Reset to Standard Shift
+                        </button>
+                    </td>
                 </tr>
             @endforeach
         </tbody>
