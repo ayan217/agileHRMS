@@ -27,10 +27,9 @@
                 <th>Clock In</th>
                 <th>Clock Out</th>
                 <th>Worked</th>
-                <th>Break</th>
-                <th>Late</th>
+              
                 <th>Next Holiday</th>
-                <th>Holiday List</th>
+               
             </tr>
         </thead>
 
@@ -63,31 +62,18 @@
 
                     <td>{{ gmdate('H:i:s', $row['worked']) }}</td>
 
-                    <td>{{ gmdate('H:i:s', $row['break']) }}</td>
-
-                    <td>
-                        {{ $row['late'] ? 'Yes' : 'No' }}
-                        @if ($row['late'])
-                            <span class="late-badge">Late</span>
-                        @endif
-                    </td>
-
-                    <!-- Next Holiday -->
-                    <td>
-                        @if ($row['next_holiday'] !== null)
-                            In {{ $row['next_holiday'] }} {{ $row['next_holiday'] == 1 ? 'day' : 'days' }}
-                        @else
-                            --
-                        @endif
-
-                    </td>
-
-                    <!-- Holiday List Button -->
+                
                     <td>
                         <button class="filter-btn" wire:click="openHolidayList({{ $row['id'] }})">
+                            @if ($row['next_holiday'] !== null)
+                            In {{ $row['next_holiday'] }} {{ $row['next_holiday'] == 1 ? 'day' : 'days' }}
+                        @else
                             Check
+                        @endif
                         </button>
                     </td>
+
+                 
                 </tr>
             @endforeach
         </tbody>
